@@ -10,10 +10,6 @@ export function DialogueNode({ data }: NodeProps<DialogueNode>) {
       link.destinationConversationID !== undefined &&
       link.destinationDialogueID !== undefined,
   );
-  const label =
-    entry.title === "START"
-      ? "Start"
-      : `${entry.actor.display_name}: ${entry.dialogue_text || entry.sequence}${entry.execute ? `\nEXEC: ${entry.execute}` : ""}`;
   return (
     <div className="dialogue_node_outer">
       {data.hasPrevious ? (
