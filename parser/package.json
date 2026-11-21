@@ -1,0 +1,23 @@
+{
+  "name": "swc_dbparser",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gen_types": "npx tsc && mkdir -p src/generated && node dist/schema_gen.js",
+    "start": "npx tsc && node dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/to-json-schema": "^0.2.4",
+    "json-schema-to-typescript": "^16.0.0",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@xyflow/react": "^13.0.2",
+    "react": "^19.3.1",
+    "to-json-schema": "^0.2.5"
+  }
+}
