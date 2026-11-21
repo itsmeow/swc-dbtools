@@ -1,4 +1,8 @@
-import type { Node, BuiltInNode } from '@xyflow/react';
+import type { Node, BuiltInNode } from "@xyflow/react";
+import { DialogueEntry } from "../../../parser/src/swc_db";
 
-export type PositionLoggerNode = Node<{ label: string }, 'position-logger'>;
-export type AppNode = BuiltInNode | PositionLoggerNode;
+export type DialogueNode = Node<
+  { entry: DialogueEntry; hasPrevious: boolean },
+  "dialogue"
+>;
+export type AppNode = BuiltInNode | DialogueNode;

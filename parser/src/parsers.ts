@@ -150,25 +150,27 @@ export function parseDialogue(
       dialogue_text: findObjectValue(fields, "Dialogue Text"),
       sequence: findObjectValue(fields, "Sequence"),
       conversationID: entry.conversationID,
-      outgoingLinks: {
-        originConversationID: safeGetNumber(
-          entry.outgoingLinks,
-          "originConversationID",
-        ),
-        originDialogueID: safeGetNumber(
-          entry.outgoingLinks,
-          "originDialogueID",
-        ),
-        destinationConversationID: safeGetNumber(
-          entry.outgoingLinks,
-          "destinationConversationID",
-        ),
-        destinationDialogueID: safeGetNumber(
-          entry.outgoingLinks,
-          "destinationDialogueID",
-        ),
-      },
-      execute: `${safeGet(entry, "onExecute")}`,
+      outgoingLinks:
+        entry.outgoingLinks.Array?.flatMap((out) => {
+          if (typeof out !== "object" || !out) {
+            return [];
+          }
+          return [
+            {
+              originConversationID: safeGetNumber(out, "originConversationID"),
+              originDialogueID: safeGetNumber(out, "originDialogueID"),
+              destinationConversationID: safeGetNumber(
+                out,
+                "destinationConversationID",
+              ),
+              destinationDialogueID: safeGetNumber(
+                out,
+                "destinationDialogueID",
+              ),
+            },
+          ];
+        }) || [],
+      execute: `${safeGet(entry, "userScript")}`,
       condition: `${safeGet(entry, "conditionsString")}`,
     });
   }

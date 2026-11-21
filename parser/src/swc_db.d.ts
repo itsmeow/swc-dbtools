@@ -30,7 +30,7 @@ export interface DialogueEntry {
     originDialogueID: number | undefined;
     destinationConversationID: number | undefined;
     destinationDialogueID: number | undefined;
-  };
+  }[];
   execute: string;
   condition: string;
 }

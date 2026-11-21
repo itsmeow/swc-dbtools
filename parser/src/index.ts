@@ -14,4 +14,8 @@ validatePortraits(actors);
 
 const conversations = parseConversations(swc_db_raw, actorsById);
 
-console.log(conversations)
+fs.writeFileSync(
+  "../data/conversations.json",
+  JSON.stringify({ data: conversations }),
+);
+fs.writeFileSync("../data/actors.json", JSON.stringify({ data: actors }));
