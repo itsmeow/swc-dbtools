@@ -5,6 +5,7 @@ import type {
   DialogueEntry,
   RawDialogueEntry,
   SWCDBObject,
+  Variable,
 } from "./swc_db.js";
 
 function safeGet(obj: any, key: string): any {
@@ -201,6 +202,25 @@ export function parseConversations(
       actor: actor,
       conversant: conversant,
       dialogue: dialogue,
+    });
+  }
+  return entries;
+}
+
+export function parseVariables(db: SWCDBSchema): Array<Variable> {
+  let entries: Array<Variable> = [];
+  if (!db.variables?.Array) {
+    return [];
+  }
+  for (let entry of db.variables.Array) {
+    const fields = filterFields(entry.fields?.Array);
+    if (entry.id === undefined) {
+      throw `Invalid entry ID for variable ${JSON.stringify(entry)}`;
+    }
+    entries.push({
+      id: entry.id,
+      name: findObjectValue(fields, "Name"),
+      initialValue: findObjectValue(fields, "Initial Value"),
     });
   }
   return entries;

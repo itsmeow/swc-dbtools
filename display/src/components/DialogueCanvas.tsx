@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import DialogueText from "./DialogueText";
 
 export interface DialogueCanvasProps {
   speakerName: string;
@@ -62,6 +63,7 @@ export const DialogueCanvas: React.FC<DialogueCanvasProps> = ({
   const portraitImgRef = useRef<HTMLImageElement | null>(null);
   const dialogueBoxImgRef = useRef<HTMLImageElement | null>(null);
   const [renderTick, setRenderTick] = useState(0);
+  const [hasValidPortrait, setHasValidPortrait] = useState(false);
 
   useEffect(() => {
     const img = new Image();
@@ -79,16 +81,27 @@ export const DialogueCanvas: React.FC<DialogueCanvasProps> = ({
 
     if (!portrait) {
       portraitImgRef.current = null;
+      setHasValidPortrait(false);
       if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
       return;
     }
 
+    let cancelled = false;
+    setHasValidPortrait(false);
+
     const img = new Image();
     portraitImgRef.current = img;
 
-    const handleLoad = () => setRenderTick((n) => n + 1);
+    const handleLoad = () => {
+      if (cancelled) return;
+      setHasValidPortrait(img.naturalWidth > 0);
+      setRenderTick((n) => n + 1);
+    };
+
     const handleError = () => {
+      if (cancelled) return;
       portraitImgRef.current = null;
+      setHasValidPortrait(false);
       if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
     };
 
@@ -97,12 +110,15 @@ export const DialogueCanvas: React.FC<DialogueCanvasProps> = ({
     img.src = portrait;
 
     return () => {
+      cancelled = true;
       img.removeEventListener("load", handleLoad);
       img.removeEventListener("error", handleError);
     };
   }, [portrait]);
 
   useEffect(() => {
+    if (!hasValidPortrait) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -110,7 +126,6 @@ export const DialogueCanvas: React.FC<DialogueCanvasProps> = ({
 
     const portraitImg = portraitImgRef.current;
     if (
-      !portrait ||
       !portraitImg ||
       !portraitImg.complete ||
       portraitImg.naturalWidth === 0
@@ -149,7 +164,7 @@ export const DialogueCanvas: React.FC<DialogueCanvasProps> = ({
         boxImg.height * dialogueScale,
       );
     }
-  }, [portrait, renderTick]);
+  }, [hasValidPortrait, portrait, renderTick]);
 
   const speakerTextShadow = [
     `0 0 ${SPEAKER_NAME_SHADOW_BLUR}px ${SPEAKER_NAME_SHADOW_COLOR}`,
@@ -158,7 +173,66 @@ export const DialogueCanvas: React.FC<DialogueCanvasProps> = ({
     `0 0 ${SPEAKER_NAME_SHADOW_BLUR * 1.5}px ${SPEAKER_NAME_SHADOW_COLOR_2}`,
   ].join(", ");
 
-  const hasPortrait = Boolean(portrait);
+  if (!hasValidPortrait) {
+    const scale = displayScale ?? 1;
+    const fallbackSpeakerFontSize = SPEAKER_NAME_FONT_SIZE * fontScale * scale;
+    const fallbackTextFontSize = TEXT_FONT_SIZE * fontScale * scale;
+    const fallbackShadowBlur = SPEAKER_NAME_SHADOW_BLUR * scale;
+
+    const fallbackTextShadow = [
+      `0 0 ${fallbackShadowBlur}px ${SPEAKER_NAME_SHADOW_COLOR}`,
+      `0 0 ${fallbackShadowBlur}px ${SPEAKER_NAME_SHADOW_COLOR}`,
+      `0 0 ${fallbackShadowBlur * 1.25}px ${SPEAKER_NAME_SHADOW_COLOR_2}`,
+      `0 0 ${fallbackShadowBlur * 1.5}px ${SPEAKER_NAME_SHADOW_COLOR_2}`,
+    ].join(", ");
+
+    return (
+      <div
+        className={className}
+        style={{
+          position: "static",
+          maxWidth: "500px",
+          ...style,
+        }}
+      >
+        {speakerName && (
+          <div
+            style={{
+              fontFamily: '"NewRocker", sans-serif',
+              fontSize: `${fallbackSpeakerFontSize}px`,
+              lineHeight: SPEAKER_NAME_LINE_HEIGHT_RATIO,
+              color: SPEAKER_NAME_COLOR,
+              textShadow: fallbackTextShadow,
+              background: "transparent",
+              userSelect: "text",
+              textAlign: "left",
+            }}
+          >
+            {speakerName}
+          </div>
+        )}
+
+        {text && (
+          <div
+            style={{
+              fontFamily: '"Geo", sans-serif',
+              fontSize: `${fallbackTextFontSize}px`,
+              lineHeight: TEXT_LINE_HEIGHT_RATIO,
+              color: TEXT_COLOR,
+              background: "transparent",
+              overflowWrap: "break-word",
+              whiteSpace: "pre-wrap",
+              userSelect: "text",
+              textAlign: "left",
+            }}
+          >
+            <DialogueText text={text} />
+          </div>
+        )}
+      </div>
+    );
+  }
+
   const scale = displayScale ?? 1;
 
   return (
@@ -172,6 +246,7 @@ export const DialogueCanvas: React.FC<DialogueCanvasProps> = ({
       }}
     >
       <div
+        className="dialogue_box"
         style={{
           position: "relative",
           width: `${CANVAS_WIDTH}px`,
@@ -188,7 +263,7 @@ export const DialogueCanvas: React.FC<DialogueCanvasProps> = ({
           style={{ display: "block", width: "100%", height: "100%" }}
         />
 
-        {hasPortrait && speakerName && (
+        {speakerName && (
           <div
             style={{
               position: "absolute",
@@ -208,7 +283,7 @@ export const DialogueCanvas: React.FC<DialogueCanvasProps> = ({
           </div>
         )}
 
-        {hasPortrait && text && (
+        {text && (
           <div
             style={{
               position: "absolute",
@@ -226,7 +301,7 @@ export const DialogueCanvas: React.FC<DialogueCanvasProps> = ({
               textAlign: "left",
             }}
           >
-            {text}
+            <DialogueText text={text} />
           </div>
         )}
       </div>

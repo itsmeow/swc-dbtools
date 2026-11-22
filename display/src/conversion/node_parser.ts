@@ -63,6 +63,7 @@ export function conversationToNodesAndEdges(
           destinationDialogue?.condition !== ""
             ? destinationDialogue?.condition
             : undefined,
+        type: "condition",
       });
       // Parse out external conversations.
       if (

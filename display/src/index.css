@@ -4,6 +4,23 @@
   font-weight: 400;
 }
 
+.react-flow {
+  --xy-theme-primary: #ff00dd;
+  --xy-theme-selected: rgba(0, 255, 0, 0.451);
+  --xy-node-background-color: black;
+  --xy-node-border: 1px solid #ff00dd3e;
+  --xy-theme-hover: #ff00ddc2;
+}
+
+.dialogue_box {
+  background-color: #0f0f0f;
+}
+
+.dialogue_node_inner {
+  margin-bottom: -10px;
+}
+
+
 @font-face {
   font-family: "Geo";
   src: url("/fonts/Geo-Regular.ttf") format("truetype");
@@ -252,4 +269,129 @@ button:disabled {
   padding: 20px;
   text-align: center;
   color: #999;
+}
+
+.shaking-char {
+  display: inline-block;
+  --shake-duration: inherit;
+  --shake-distance: inherit;
+  --shake-rot: 1.5deg;
+  animation-name: char-jostle;
+  animation-duration: var(--shake-duration);
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-delay: var(--shake-delay, 0ms);
+}
+
+.shaking-char--wiggle {
+  --shake-rot: 0deg;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes char-jostle {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  12.5% {
+    transform: translate(
+      calc(var(--dx1) * var(--shake-distance)),
+      calc(var(--dy1) * var(--shake-distance))
+    ) rotate(calc(var(--dx1) * var(--shake-rot)));
+  }
+  25% {
+    transform: translate(
+      calc(var(--dx2) * var(--shake-distance)),
+      calc(var(--dy2) * var(--shake-distance))
+    ) rotate(calc(var(--dx2) * var(--shake-rot)));
+  }
+  37.5% {
+    transform: translate(
+      calc(var(--dx3) * var(--shake-distance)),
+      calc(var(--dy3) * var(--shake-distance))
+    ) rotate(calc(var(--dx3) * var(--shake-rot)));
+  }
+  50% {
+    transform: translate(
+      calc(var(--dx4) * var(--shake-distance)),
+      calc(var(--dy4) * var(--shake-distance))
+    ) rotate(calc(var(--dx4) * var(--shake-rot)));
+  }
+  62.5% {
+    transform: translate(
+      calc(var(--dx5) * var(--shake-distance)),
+      calc(var(--dy5) * var(--shake-distance))
+    ) rotate(calc(var(--dx5) * var(--shake-rot)));
+  }
+  75% {
+    transform: translate(
+      calc(var(--dx6) * var(--shake-distance)),
+      calc(var(--dy6) * var(--shake-distance))
+    ) rotate(calc(var(--dx6) * var(--shake-rot)));
+  }
+  87.5% {
+    transform: translate(
+      calc(var(--dx7) * var(--shake-distance)),
+      calc(var(--dy7) * var(--shake-distance))
+    ) rotate(calc(var(--dx7) * var(--shake-rot)));
+  }
+}
+
+table {
+  background-color: #ff00f216;
+  border: 1px solid #ff00f24f;
+}
+
+.sequence_line {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.sequence_line td:first-child {
+  background-color: black;
+  color: white;
+  padding: 4px;
+}
+
+.sequence_line td:not(:first-child), .sequence_offset  {
+  font-family: "Geo", Arial, sans-serif;
+  background-color: black;
+  margin: 0 4px;
+  padding: 0 2px;
+  text-align: center;
+  color: rgb(193, 193, 193);
+}
+
+.sequence_offset {
+  vertical-align: middle;
+  display: inline-block;
+  background-color: rgb(33, 27, 74);
+  color: white;
+  padding: 4px;
+  margin-left: 0;
+}
+
+.condition_edge {
+  background: rgba(0, 0, 128, 0.226);
+  border: 1px solid rgba(0, 0, 128, 0.521);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-family: 'Courier New', Courier, monospace;
+  text-align: center;
+  white-space: pre;
+}
+
+.condition_edge.singlecheck_true {
+  background: rgba(0, 128, 0, 0.226);
+  border: 1px solid rgba(0, 128, 0, 0.521);
+}
+
+.condition_edge.singlecheck_false {
+  background: rgba(128, 0, 0, 0.226);
+  border: 1px solid rgba(128, 0, 0, 0.521);
+}
+
+.smaller {
+  color:#aaa;
+  font-size: smaller;
 }

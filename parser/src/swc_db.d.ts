@@ -43,6 +43,12 @@ export interface Conversation {
   dialogue: Array<DialogueEntry>;
 }
 
+export interface Variable {
+  id: number;
+  name: string;
+  initialValue: string;
+}
+
 // Auto-generated excerpts
 export interface RawDialogueEntry {
   id?: number;

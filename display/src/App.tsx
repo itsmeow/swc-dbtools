@@ -23,14 +23,14 @@ interface ConversationDataset {
 
 const conversations = rawJson as ConversationDataset;
 
-import { initialNodes, nodeTypes } from "./nodes";
-import { initialEdges } from "./edges";
+import { nodeTypes } from "./nodes";
+import { edgeTypes } from "./edges";
 import ConversationSelector from "./components/ConversationSelector";
 import { conversationToNodesAndEdges } from "./conversion/node_parser.ts";
 
 export default function App() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const onConnect: OnConnect = useCallback(
     (connection) => setEdges((edges) => addEdge(connection, edges)),
     [setEdges],
@@ -73,7 +73,10 @@ export default function App() {
       // so it matches the React Flow node anchor point (top left).
       const x = position.x - (node.measured?.width ?? 0) / 2;
       const y = position.y - (node.measured?.height ?? 0) / 2;
-      return { ...node, position: { x: x * scaleFactor, y: y * scaleFactor } };
+      return {
+        ...node,
+        position: { x: x * scaleFactor * 1.5, y: y * scaleFactor },
+      };
     });
 
     setNodes(newNodes);
@@ -133,6 +136,7 @@ export default function App() {
               nodeTypes={nodeTypes}
               onNodesChange={onNodesChange}
               edges={edges}
+              edgeTypes={edgeTypes}
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
               fitView

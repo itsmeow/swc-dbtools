@@ -2,6 +2,7 @@ import { Handle, Position, type NodeProps } from "@xyflow/react";
 
 import { type DialogueNode } from "./types";
 import DialogueCanvas from "../components/DialogueCanvas";
+import SequenceDisplay from "../components/SequenceDisplay";
 
 export function DialogueNode({ data }: NodeProps<DialogueNode>) {
   const entry = data.entry;
@@ -16,7 +17,11 @@ export function DialogueNode({ data }: NodeProps<DialogueNode>) {
         <Handle type="target" position={Position.Top} />
       ) : null}
       {entry.title === "START" ? (
-        <div>START</div>
+        <div>
+          START
+          <br />
+          <span className="smaller">({entry.conversationID})</span>
+        </div>
       ) : (
         <div className="dialogue_node_inner" style={{ textAlign: "left" }}>
           {entry.dialogue_text ? (
@@ -25,13 +30,14 @@ export function DialogueNode({ data }: NodeProps<DialogueNode>) {
               portrait={`/portraits/resources.assets-${entry.actor.portrait}.png`}
               text={entry.dialogue_text}
               displayScale={0.2}
+              style={{ marginBottom: "10px" }}
             />
           ) : null}
-          <div>
-            <pre>
-              <code>{entry.sequence}</code>
-            </pre>
-          </div>
+          {entry.sequence.length > 0 ? (
+            <div>
+              <SequenceDisplay text={entry.sequence} />
+            </div>
+          ) : null}
           <div>
             <pre>
               <code>{entry.execute}</code>
