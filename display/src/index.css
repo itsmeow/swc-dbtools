@@ -228,7 +228,7 @@ button:disabled {
   flex-grow: 1;
   border: 1px solid #ff00f24f;
   border-radius: 0;
-  max-height: 96%;
+  max-height: 92%;
   height: 100%;
   overflow-y: auto;
   background-color: #ff00f216;
@@ -394,4 +394,43 @@ table {
 .smaller {
   color:#aaa;
   font-size: smaller;
+}
+
+.treewrapper {
+  padding-right: 8px;
+  padding-top: 2.5px;
+  font-size: smaller;
+  font-family: 'Roboto', 'Roboto Fallback', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.treeitem_btn {
+  width: 48px;
+  height: 48px;
+  vertical-align: middle;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.treeitem_btn.noimage {
+  width: 32px;
+  height: inherit;
+}
+
+.tree_img {
+  vertical-align: middle;
+  display: inline-block;
+  margin-right: 10px;
+  width: 48px;
+  height: 48px;
+}
+
+.treeitem_name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.actor_info {
+  color: white;
 }

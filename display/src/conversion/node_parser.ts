@@ -1,6 +1,7 @@
 import { Edge } from "@xyflow/react";
 import { DialogueEntry, Conversation } from "../../../parser/src/swc_db";
 import { AppNode } from "../nodes/types";
+import { AppEdge } from "../edges/types";
 
 export function dialogueEntryToNode(
   entry: DialogueEntry,
@@ -41,7 +42,7 @@ export function conversationToNodesAndEdges(
   conversationId: number,
   prevEdges: Array<Edge> = [],
   evaluatedConversations: Array<number> = [],
-): [AppNode[], Edge[]] {
+): [AppNode[], AppEdge[]] {
   let convo = conversations.find((convo) => convo.id === conversationId);
   let newEdges = [...prevEdges];
   if (!convo) {

@@ -1,16 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import {
-  ReactFlow,
-  Background,
-  Controls,
-  MiniMap,
-  addEdge,
-  useNodesState,
-  useEdgesState,
-  type OnConnect,
-} from "@xyflow/react";
+import { useState } from "react";
 import { Panel, Group, Separator } from "react-resizable-panels";
-import Dagre from "@dagrejs/dagre";
 
 import "@xyflow/react/xy-theme.css";
 
@@ -23,66 +12,25 @@ interface ConversationDataset {
 
 const conversations = rawJson as ConversationDataset;
 
-import { nodeTypes } from "./nodes";
-import { edgeTypes } from "./edges";
+import { Actor } from "../../parser/src/swc_db.ts";
+import rawActorJson from "../../data/actors.json";
+
+interface ActorDataset {
+  data: Actor[];
+}
+
+const actors = rawActorJson as ActorDataset;
+
 import ConversationSelector from "./components/ConversationSelector";
-import { conversationToNodesAndEdges } from "./conversion/node_parser.ts";
+import ActorSelector from "./components/ActorSelector.tsx";
+import ConversationFlow from "./components/ConversationFlow.tsx";
+import ActorInfo from "./components/ActorInfo.tsx";
 
 export default function App() {
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const onConnect: OnConnect = useCallback(
-    (connection) => setEdges((edges) => addEdge(connection, edges)),
-    [setEdges],
-  );
   const [selected, setSelected] = useState<number>(0);
-
-  useEffect(() => {
-    let [newNodes, newEdges] = conversationToNodesAndEdges(
-      conversations.data,
-      selected,
-    );
-
-    newEdges = newEdges.filter(
-      (obj1, i, arr) => arr.findIndex((obj2) => obj2.id === obj1.id) === i,
-    );
-    newNodes = newNodes.filter(
-      (obj1, i, arr) => arr.findIndex((obj2) => obj2.id === obj1.id) === i,
-    );
-
-    const g = new Dagre.graphlib.Graph();
-    g.setGraph({ rankdir: "TB" });
-    g.setDefaultEdgeLabel(() => ({}));
-
-    const scaleFactor = 10;
-
-    newEdges.forEach((edge) => g.setEdge(edge.source, edge.target));
-    newNodes.forEach((node) =>
-      g.setNode(node.id, {
-        ...node,
-        width: node.measured?.width ?? 0,
-        height: node.measured?.height ?? 0,
-      }),
-    );
-
-    Dagre.layout(g);
-
-    newNodes = newNodes.map((node) => {
-      const position = g.node(node.id);
-      // We are shifting the dagre node position (anchor=center center) to the top left
-      // so it matches the React Flow node anchor point (top left).
-      const x = position.x - (node.measured?.width ?? 0) / 2;
-      const y = position.y - (node.measured?.height ?? 0) / 2;
-      return {
-        ...node,
-        position: { x: x * scaleFactor * 1.5, y: y * scaleFactor },
-      };
-    });
-
-    setNodes(newNodes);
-    setEdges(newEdges);
-  }, [selected]);
-
+  const [selectedActor, setSelectedActor] = useState<number>(0);
+  const [panelMode, setPanelMode] = useState<string>("conversations");
+  const myActor = actors.data.find((a) => a.id === selectedActor);
   return (
     <>
       <Group
@@ -111,19 +59,51 @@ export default function App() {
                 height: "100%",
               }}
             >
-              <div>
-                <h2 style={{ textAlign: "center", padding: "1rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "6px",
+                  padding: "5px",
+                }}
+              >
+                <button
+                  disabled={panelMode === "conversations"}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setPanelMode("conversations");
+                  }}
+                  style={{ flexGrow: "1", padding: "8px", fontSize: "1.25rem" }}
+                >
                   Conversations
-                </h2>
+                </button>
+                <button
+                  disabled={panelMode === "actors"}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setPanelMode("actors");
+                  }}
+                  style={{ flexGrow: "1", padding: "8px", fontSize: "1.25rem" }}
+                >
+                  Actors
+                </button>
               </div>
               <div
                 style={{ flexGrow: "1", overflowY: "scroll", height: "100%" }}
               >
-                <ConversationSelector
-                  selected={selected}
-                  setSelected={setSelected}
-                  conversations={conversations.data}
-                />
+                {panelMode === "actors" ? (
+                  <ActorSelector
+                    selected={selectedActor}
+                    setSelected={setSelectedActor}
+                    actors={actors.data}
+                  />
+                ) : (
+                  <ConversationSelector
+                    selected={selected}
+                    setSelected={setSelected}
+                    conversations={conversations.data}
+                  />
+                )}
               </div>
             </div>
           </aside>
@@ -131,20 +111,14 @@ export default function App() {
         <Separator style={{ width: "2px", backgroundColor: "#424242" }} />
         <Panel>
           <main style={{ height: "100%", padding: "0" }}>
-            <ReactFlow
-              nodes={nodes}
-              nodeTypes={nodeTypes}
-              onNodesChange={onNodesChange}
-              edges={edges}
-              edgeTypes={edgeTypes}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-              fitView
-            >
-              <Background />
-              <MiniMap />
-              <Controls />
-            </ReactFlow>
+            {panelMode === "conversations" ? (
+              <ConversationFlow
+                conversations={conversations.data}
+                selected={selected}
+              />
+            ) : myActor ? (
+              <ActorInfo actor={myActor} conversations={conversations.data} />
+            ) : null}
           </main>
         </Panel>
       </Group>
